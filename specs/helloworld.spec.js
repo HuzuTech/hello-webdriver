@@ -24,8 +24,8 @@ describe("HelloWorld", function(){
 		/*driver = webdriver.remote(
 			  "ondemand.saucelabs.com"
 			  , 80
-			  , "huzutech"
-			  , "895d210d-b875-4d30-b6ab-b6b6361b1e3e"
+			  , "*"
+			  , "*"
 			);*/
 	});
 
