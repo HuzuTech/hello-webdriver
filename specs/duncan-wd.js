@@ -1,27 +1,28 @@
 var webdriver = require('wd');
 var fs = require('fs');
+var assert = require('assert');
 
 var driver = webdriver.remote();
 
 driver.init(function(sessionId, err){
-	testHapiCMS(driver);
+	testHapiCMS();
 });
 
-function testGoogle(browser){
+function testGoogle(driver){
 
 
-	browser.get('https://www.google.com/', function(err, url){
+	driver.get('https://www.google.com/', function(err, url){
 		
-		browser.elementByName("q", function(err, element){
+		driver.elementByName("q", function(err, element){
 			
 			element.type('wtf', function(err){
-				browser.elementByName('btnK', function(err, element){
+				driver.elementByName('btnK', function(err, element){
 					element.click(function(err){
 						console.log('clicked');
-						browser.elementByCssSelector('div.gsq_a', function(err, element){
+						driver.elementByCssSelector('div.gsq_a', function(err, element){
 							element.click(function(err){})
 						});
-						//browser.quit();
+						//driver.quit();
 					});
 				});
 
@@ -32,28 +33,53 @@ function testGoogle(browser){
 
 }
 
-function testHapiCMS(browser){
-	browser.get('https://hapi-cms-test.herokuapp.com/?whatthefuckisthis', function(err, url){
+function setElementValue(selector, value, cb)
+{
+	driver.elementByCss(selector, function(err, element){
+		driver.type(element, value, function (err) {
+			cb()
+		});
+	
+	});
+}
 
-			browser.elementByCss(
+function testHapiCMS(){
+	driver.get('https://hapi-cms-test.herokuapp.com/?whatthefuckisthis', function(err, url){
+			driver.elementByCss(
 				"div.hzt-app-content iframe", function(err, element){
+				console.log("element toString "+element.toString());
+				console.log(arguments);
 
 console.log(element);
 
-				browser.getTagName(element, function(err, name){
+				driver.getTagName(element, function(err, name){
 
 console.log('tag name:'+name);
 
-					browser.frame(element, function(err){
+					driver.frame(Number(element.toString()), function(err){
 							if(err) console.log('error: '+err);
-							browser.title(function(err, title){
-
-console.log('title:'+title);
+					     
+						setElementValue("#Username", "owner", function(){
+							setElementValue("#Password", "HuzuRocks!", function(){
+								driver.elementByCss("#login-btn", function(err, element){
+									element.click(function (err) {
+										driver.frame(null, function(err){
+											driver.waitForVisibleByCss("div.home", 2000, function(err){
+												assert.ifError(err);
+												driver.quit();
+											});
+										});
+									});
+							
+								});
 							});
+						});
+							
+							
 					});
 
 				});
-				browser.text(element, function(err, text){ console.log(text);})
+				driver.text(element, function(err, text){ console.log(text);})
 			});
 	})
 }
