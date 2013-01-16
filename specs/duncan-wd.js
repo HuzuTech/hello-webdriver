@@ -33,6 +33,7 @@ function testGoogle(driver){
 
 }
 
+<<<<<<< HEAD
 function setElementValue(selector, value, cb)
 {
 	driver.elementByCss(selector, function(err, element){
@@ -53,11 +54,24 @@ function testHapiCMS(){
 console.log(element);
 
 				driver.getTagName(element, function(err, name){
+=======
+function testHapiCMS(browser){
+	browser.get('https://hapi-cms-test.herokuapp.com/', function(err, url){
+			
 
-console.log('tag name:'+name);
+			browser.elementByCss("footer", function(err, element){
+if(err)console.log("err = "+err);
+console.log(element);	
+console.log(element["ELEMENT"]);
+return;
+				browser.getTagName(element, function(err, name){
+>>>>>>> 728f2f71fea364e1856df1824081a561bcb222bd
+
+console.log('\ntag name:'+name);
 
 					driver.frame(Number(element.toString()), function(err){
 							if(err) console.log('error: '+err);
+<<<<<<< HEAD
 					     
 						setElementValue("#Username", "owner", function(){
 							setElementValue("#Password", "HuzuRocks!", function(){
@@ -72,6 +86,11 @@ console.log('tag name:'+name);
 									});
 							
 								});
+=======
+							browser.title(function(err, title){
+
+console.log('\ntitle:'+title);
+>>>>>>> 728f2f71fea364e1856df1824081a561bcb222bd
 							});
 						});
 							
