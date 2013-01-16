@@ -33,22 +33,23 @@ function testGoogle(browser){
 }
 
 function testHapiCMS(browser){
-	browser.get('https://hapi-cms-test.herokuapp.com/?whatthefuckisthis', function(err, url){
+	browser.get('https://hapi-cms-test.herokuapp.com/', function(err, url){
+			
 
-			browser.elementByCss(
-				"div.hzt-app-content iframe", function(err, element){
-
-console.log(element);
-
+			browser.elementByCss("footer", function(err, element){
+if(err)console.log("err = "+err);
+console.log(element);	
+console.log(element["ELEMENT"]);
+return;
 				browser.getTagName(element, function(err, name){
 
-console.log('tag name:'+name);
+console.log('\ntag name:'+name);
 
 					browser.frame(element, function(err){
 							if(err) console.log('error: '+err);
 							browser.title(function(err, title){
 
-console.log('title:'+title);
+console.log('\ntitle:'+title);
 							});
 					});
 
