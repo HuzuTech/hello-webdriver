@@ -5,33 +5,10 @@ var assert = require('assert');
 var driver = webdriver.remote();
 
 driver.init(function(sessionId, err){
-	testHapiCMS(driver);
+	//testHapiCMS(driver);
+	testiFrames(driver);
 });
 
-function testGoogle(driver){
-
-
-	driver.get('https://www.google.com/', function(err, url){
-		
-		driver.elementByName("q", function(err, element){
-			
-			element.type('wtf', function(err){
-				driver.elementByName('btnK', function(err, element){
-					element.click(function(err){
-						console.log('clicked');
-						driver.elementByCssSelector('div.gsq_a', function(err, element){
-							element.click(function(err){})
-						});
-						//driver.quit();
-					});
-				});
-
-			});
-		});
-	});
-
-
-}
 
 function setElementValue(selector, value, cb)
 {
@@ -43,8 +20,17 @@ function setElementValue(selector, value, cb)
 	});
 }
 
+function testiFrames(browser){
+	browser.get('http://localhost:3000/', function(err, url){
+		browser.title(function(err, title){
+			if(err) console.log(err);
+			else console.log(title);
+		});
+	});
+}
+
 function testHapiCMS(browser){
-	browser.get('https://hapi-cms-test.herokuapp.com/', function(err, url){
+	browser.get('http://localhost:3000/', function(err, url){
 		browser.elementByTagName("iframe", function(err, element){
 
 if(err)console.log("err = "+err);
