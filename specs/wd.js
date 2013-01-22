@@ -22,9 +22,13 @@ function setElementValue(selector, value, cb)
 
 function testiFrames(browser){
 	browser.get('http://localhost:3000/', function(err, url){
-		browser.title(function(err, title){
-			if(err) console.log(err);
-			else console.log(title);
+		browser.elementById("iframe1", function(err, element){
+
+				console.log(element.toString());
+
+				browser.title(function(err, title){
+					console.log("Title = "+title);
+				});
 		});
 	});
 }

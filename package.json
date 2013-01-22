@@ -9,7 +9,6 @@
     "express": "3.0.6",
     "jade": "*",
     "wd": "0.0.27",
-    "jasmine-node": "~1.0.28",
-    "webdriverjs": "~0.6.9"
+    "jasmine-node": "~1.0.28"
   }
 }
