@@ -1,4 +1,27 @@
 <html>
-<head><title>iFrame1</title></head>
-<body>iFrame1</body>
+	<head>
+		<title>iFrame1</title>
+			<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+		    <script>
+		      $( document ).ready(function() {
+		        console.log("iFrame 1 document loaded");
+		        $("#btn1").bind('click', echoInputText);
+
+		        $("#txt1").on('change', echoInputText);
+		      });
+		 
+		      $( window ).load(function() {
+		        console.log("iFrame 2 window loaded");
+		      });
+
+		      function echoInputText(){
+		     	$("#label1").text($("#txt1").val());
+		      }
+		    </script>
+	</head>
+	<body>
+		<input type="button" id="btn1" text="click me"></input>
+		<input type-"text" id ="txt1" value="WTF"></input>
+		<div id="label1"></div>
+	</body>
 </html>

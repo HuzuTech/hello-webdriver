@@ -1,48 +1,89 @@
 var webdriver = require('wd');
-var fs = require('fs');
 var assert = require('assert');
 
 var driver = webdriver.remote();
-
-driver.init(function(sessionId, err){
-	//testHapiCMS(driver);
-	testiFrames(driver);
+var driverOptions = {
+		browserName : "phantomjs"
+}
+driver.init(driverOptions, function(err, sessionID){
+	testiFrames();
 });
 
-
+/*
+	Utility functions
+*/
 function setElementValue(selector, value, cb)
 {
-	driver.elementByCss(selector, function(err, element){
-		driver.type(element, value, function (err) {
-			cb()
+	try{
+		driver.elementByCss(selector, function(err, element){
+			driver.type(element, value, function (err) {
+				cb()
+			});
+		
 		});
-	
-	});
+	}
+	catch(err){
+		console.log("Error setting value: "+err);
+		driver.quit();
+	}
 }
 
-function testiFrames(browser){
-	browser.get('http://localhost:3000/', function(err, url){
-		browser.elementById("iframe1", function(err, element){
+/*
+	The tests
+*/
+function testiFrames(){
 
-				console.log(element.toString());
+	console.log("Testing iFrames");
 
-				browser.title(function(err, title){
-					console.log("Title = "+title);
+	var frame1ref, frame2ref;
+
+	console.log(driver);
+
+	driver.get("http://localhost:3000/", function(err, url){
+
+
+		driver.elementsByTagName("iframe", function(err, frames){
+
+			console.log("Found "+frames.length+" frames");
+			frame1ref = frames[0].value;
+
+			driver.frame(0, function(err){
+
+				if(err) console.log("Error switching frame: "+err);
+				driver.elementByCssSelector("#btn1", function(err, element){
+					if(err) console.log("Error finding button: "+err);
+					element.click(function(err){
+						if(err) console.log("Error clicking button: "+err);
+						else console.log("clicked it");
+
+						// get the output div 
+						driver.elementByCssSelector("#txt1", function(err, thediv){
+							thediv.getValue(function(err, value){
+								assert.equal("WTF", value.toString());
+								driver.quit();
+							});
+						});
+						
+					});
 				});
+			});
 		});
 	});
 }
 
-function testHapiCMS(browser){
-	browser.get('http://localhost:3000/', function(err, url){
-		browser.elementByTagName("iframe", function(err, element){
 
-if(err)console.log("err = "+err);
-console.log(element);	
 
-			browser.getTagName(element, function(err, name){
 
-console.log('\ntag name:'+name);
+
+
+
+function testHapiCMS(){
+	driver.get('https://hapi-cms-test.herokuapp.com/', function(err, url){
+
+			//driver.elementByCssSelector("div.hzt-app-content iframe", function(err, element){
+			driver.elementByCssSelector("div.hzt-app-content iframe", function(err, element){
+
+console.log(element);
 
 				driver.frame(Number(element.toString()), function(err){
 					if(err) console.log('error: '+err);
@@ -63,6 +104,6 @@ console.log('\ntag name:'+name);
 					});
 				});
 			});
-		});
+	
 	});
 }
