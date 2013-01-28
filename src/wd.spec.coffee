@@ -2,52 +2,82 @@ webdriver = require "wd"
 assert = require "assert"
 
 rootURL = "https://hapi-cms-dev.herokuapp.com/"
+
 driverOptions = 
-	browserName : "phantomjs"
-acceptableTimeout = 2000
+	browserName : "firefox"
+
+acceptableTimeout = 10000
 
 
+# Test Fixtures
 describe "HAPI CMS", ->
 	describe "homepage", ->
-		it "should have a title", ->
-			finished = false
-			title = ""
+		it "should accept valid login details", ->
 
-			runs ->
-				driver = webdriver.remote()
-				driver.init driverOptions, (err, sessionid) -> 
-					driver.get rootURL, (err) ->
-						driver.title (err, value) ->
-							title = value
-							finished = true
-							driver.quit()
-			waitsFor(
-				-> finished, 
-				"say something", 
-				acceptableTimeout)
-			runs ->
-				console.log  title
-				expect(title).not.toBe("")
-
-		it "should have a login control", ->
 			finished = false
-			frameExists = false
+			username = "owner"
+			pazzwrd = "HuzuRocks!"
+			loginComplete = false
 
 			runs ->
 				driver = webdriver.remote()
 				driver.init driverOptions, (err, sessionid) -> 
 					driver.get rootURL, (err) ->
 						driver.frame 0, (err) ->
-							if(err) 
-								console.log "Frame error #{err.message}"
-							frameExists = not err
-							driver.quit()
-							finished = true
+							setElementValueByCss driver, "#Username", username, ->
+								setElementValueByCss driver, "#Password", pazzwrd, ->
+									driver.elementByCss "#login-btn", (err, element) ->
+										element.click (err) ->
+											driver.frame null, ->
+												driver.waitForVisibleByCss "div.home", acceptableTimeout,(err) ->
+													loginComplete = true unless err
+													finished = true
+													driver.quit()
 
 			waitsFor(
 				-> finished,
-				"not sure what this is for",
-				acceptableTimeout)
+				"login sequence to complete",
+				acceptableTimeout
+			)
+			runs ->
+				expect(loginComplete).toBe(true)
+
+		it "should reject invalid login details", ->
+
+			finished = false
+			username = "ebeneezer"
+			pazzwrd = "good"
+			errorMessageVisible = false
 
 			runs ->
-				expect(frameExists).not.toBe(false)
+				driver = webdriver.remote()
+				driver.init driverOptions, (err, sessionid) -> 
+					driver.get rootURL, (err) ->
+						driver.frame 0, (err) ->
+							setElementValueByCss driver, "#Username", username, ->
+								setElementValueByCss driver, "#Password", pazzwrd, ->
+									driver.elementByCss "#login-btn", (err, element) ->
+										element.click (err) ->
+											driver.waitForVisibleByCssSelector "#validation-message", acceptableTimeout, (err) ->
+												driver.waitForVisibleByCssSelector "span.field-validation-error", acceptableTimeout, (err, validationError) ->
+													errorMessageVisible = true unless err
+													finished = true
+													driver.quit()
+			waitsFor(
+				-> finished,
+				"server to reject login attempt",
+				acceptableTimeout
+			)
+			runs ->
+				expect(errorMessageVisible).toBe(true)
+
+# Helper methods
+setElementValueByCss = (webDriver, cssSelector, value, callback) ->
+	try
+		webDriver.elementByCss(
+			cssSelector, 
+			(err, element) ->
+				webDriver.type element, value, (err) -> callback()
+			)
+	catch exc 
+		console.log "Error setting value of page element: #{exc.message}"

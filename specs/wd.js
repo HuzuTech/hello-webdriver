@@ -104,6 +104,5 @@ console.log(element);
 					});
 				});
 			});
-	
 	});
 }
