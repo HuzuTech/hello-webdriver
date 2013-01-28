@@ -40,12 +40,14 @@ describe "HAPI CMS", ->
 						driver.frame 0, (err) ->
 							if(err) 
 								console.log "Frame error #{err.message}"
-							frameExists = !err
+							frameExists = not err
 							driver.quit()
 							finished = true
+
 			waitsFor(
 				-> finished,
 				"not sure what this is for",
 				acceptableTimeout)
+
 			runs ->
 				expect(frameExists).not.toBe(false)
